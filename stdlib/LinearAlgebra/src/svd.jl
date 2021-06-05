@@ -220,8 +220,10 @@ svdvals(S::SVD{<:Any,T}) where {T} = (S.S)::Vector{T}
 
 # SVD least squares
 function ldiv!(A::SVD{T}, B::StridedVecOrMat) where T
+    m, n = size(A)
     k = searchsortedlast(A.S, eps(real(T))*A.S[1], rev=true)
-    view(A.Vt,1:k,:)' * (view(A.S,1:k) .\ (view(A.U,:,1:k)' * B))
+    mul!(view(B, 1:n, :), view(A.Vt, 1:k, :)', view(A.S, 1:k) .\ (view(A.U, :, 1:k)' * _cut_B(B, 1:m)))
+    return B
 end
 
 function inv(F::SVD{T}) where T

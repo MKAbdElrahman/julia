@@ -201,4 +201,11 @@ end
     @test Uc * diagm(0=>Sc) * transpose(V) ≈ complex.(A) rtol=1e-3
 end
 
+@testset "Issue 40944. ldiV!(SVD) should update rhs" begin
+    F = svd(randn(2, 2))
+    b = randn(2)
+    x = ldiv!(F, b)
+    @test x === b
+end
+
 end # module TestSVD
